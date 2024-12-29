@@ -1,0 +1,87 @@
+import mysql.connector
+
+# Database connection
+def connect_to_db():
+    return mysql.connector.connect(
+        host="3306",
+        user="root",  # Replace with your username
+        password="root",  # Replace with your password
+        database="inventory_management"
+    )
+
+# Add a new product
+def add_product(product_name, quantity, price):
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    query = "INSERT INTO inventory (product_name, quantity, price) VALUES (%s, %s, %s)"
+    cursor.execute(query, (product_name, quantity, price))
+    conn.commit()
+    print("Product added successfully.")
+    conn.close()
+
+# View all products
+def view_inventory():
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    query = "SELECT * FROM inventory"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    print("ID | Product Name | Quantity | Price")
+    for row in results:
+        print(f"{row[0]} | {row[1]} | {row[2]} | {row[3]}")
+    conn.close()
+
+# Update product quantity
+def update_quantity(product_id, new_quantity):
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    query = "UPDATE inventory SET quantity = %s WHERE id = %s"
+    cursor.execute(query, (new_quantity, product_id))
+    conn.commit()
+    print("Quantity updated successfully.")
+    conn.close()
+
+# Delete a product
+def delete_product(product_id):
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    query = "DELETE FROM inventory WHERE id = %s"
+    cursor.execute(query, (product_id,))
+    conn.commit()
+    print("Product deleted successfully.")
+    conn.close()
+
+# Main menu
+def main():
+    while True:
+        print("\nInventory Control Management")
+        print("1. Add Product")
+        print("2. View Inventory")
+        print("3. Update Quantity")
+        print("4. Delete Product")
+        print("5. Exit")
+        
+        choice = input("Enter your choice: ")
+        
+        if choice == "1":
+            product_name = input("Enter product name: ")
+            quantity = int(input("Enter quantity: "))
+            price = float(input("Enter price: "))
+            add_product(product_name, quantity, price)
+        elif choice == "2":
+            view_inventory()
+        elif choice == "3":
+            product_id = int(input("Enter product ID to update: "))
+            new_quantity = int(input("Enter new quantity: "))
+            update_quantity(product_id, new_quantity)
+        elif choice == "4":
+            product_id = int(input("Enter product ID to delete: "))
+            delete_product(product_id)
+        elif choice == "5":
+            print("Exiting program...")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
